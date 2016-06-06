@@ -1,21 +1,15 @@
 - if session[:auth_hash] == nil
-  %h3 You are NOT authenticated.
+  %h3 You are NOT authenticated in salesforce
   %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate/salesforce", :method => "post"}
-    %button Authenticate using your salesforce credentials
-    %hr
-  %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate/box", :method => "post"}
-    %button Authenticate using your box credentials
+    %button{id: 'salesforce_auth'} Authenticate using your salesforce credentials
 - else
-  %h3 You've been authenticated as:
-  %div{:class => "ui-body"}
-    %img{:align => "left", :src => session[:auth_hash][:info][:image], :style => "margin-right: 12px"}
-    %strong #{session[:auth_hash][:info][:name]}
-    %br
+  %h3{id: 'salesforce_user'}
     #{session[:auth_hash][:extra][:username]}
-    %br
-    #{session[:auth_hash][:extra][:organization_id]}
-    %br
-    #{session[:auth_hash][:extra][:instance_url]} 
-  %a{:"data-role" => "button", :"data-ajax" => "false", :href => "/unauthenticate"} Log out (from this app only, not salesforce.com)
-  %div{:class => "ui-body"}
-    = htmlize_hash("ENV['omniauth.auth']",session[:auth_hash])
+%hr
+- if session[:box_user] == nil
+  %h3 You are NOT authenticated in box
+  %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate/box", :method => "post"}
+    %button{id: 'box_auth'} Authenticate using your box credentials
+- else
+  %h3{id: 'box_user'}
+    #{session['box_user']}

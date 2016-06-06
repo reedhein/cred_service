@@ -54,11 +54,22 @@ class SalesForceApp < Sinatra::Base
       user = User.first_or_create(salesforce_id: env['omniauth.auth']['extra']['user_id'])
       user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
       user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+      puts "*"*88
+      puts "refresh token: #{env['omniauth.auth']['credentials']['refresh_token']}"
+      puts "*"*88
+      puts "*"*88
+      puts "access token: #{env['omniauth.auth']['credentials']['token']}"
+      puts "*"*88
       user.save
+      puts "&"*88
+      puts user.inspect
+      puts "&"*88
       session[:auth_hash] = env['omniauth.auth']
     elsif params[:provider] == 'box'
       creds = Boxr::get_tokens(params['code'])
-      create_client(creds)
+      client = create_client(creds)
+      session[:box_user] = client.current_user.fetch('name')
+      redirect '/'
     else
       binding.pry
     end
@@ -76,36 +87,6 @@ class SalesForceApp < Sinatra::Base
     haml :error
   end
 
-  helpers do
-    def sanitize_provider(provider = nil)
-      provider.strip!    unless provider == nil
-      provider.downcase! unless provider == nil
-      provider = "salesforce" unless %w(salesforcesandbox salesforceprerelease databasedotcom).include? provider
-      provider
-    end
-
-    def htmlize_hash(title, hash)
-      hashes = nil
-      strings = nil
-      hash.each_pair do |key, value|
-        case value
-        when Hash
-          hashes ||= ""
-          hashes << htmlize_hash(key,value)
-        else
-          strings ||= "<table>"
-          strings << "<tr><th scope='row'>#{key}</th><td>#{value}</td></tr>"
-        end
-      end
-      output = "<div data-role='collapsible' data-theme='b' data-content-theme='b'><h3>#{title}</h3>"
-      output << strings unless strings.nil?
-      output << "</table>" unless strings.nil?
-      output << hashes unless hashes.nil?
-      output << "</div>"
-      output
-    end
-  end
-  
   private
 
   def create_client(creds, user: User.first)
@@ -125,7 +106,7 @@ class SalesForceApp < Sinatra::Base
   last_time_say_was_run = File.read('last_run.txt').strip
   unless Date.today.to_s == last_time_say_was_run
     `say sushi is coming online` if RbConfig::CONFIG['host_os'] =~ /darwin/
-    File.open('last_run.txt') do |f|
+    File.open('last_run.txt', 'w') do |f|
       f << Date.today.to_s
     end
   end
