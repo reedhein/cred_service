@@ -51,7 +51,7 @@ class SalesForceApp < Sinatra::Base
 
   get '/auth/:provider/callback' do
     if params[:provider] == 'salesforce'
-      user = User.first_or_create(salesforce_id: env['omniauth.auth']['extra']['user_id'])
+      user = DB::User.first_or_create#(salesforce_id: env['omniauth.auth']['extra']['user_id'])
       user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
       user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
       puts "*"*88
@@ -89,7 +89,7 @@ class SalesForceApp < Sinatra::Base
 
   private
 
-  def create_client(creds, user: User.first)
+  def create_client(creds, user: DB::User.first_or_create)
     user.box_access_token   = creds.fetch('access_token')
     user.box_refresh_token  = creds.fetch('refresh_token')
     user.save
