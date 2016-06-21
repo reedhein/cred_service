@@ -8,8 +8,8 @@ require 'omniauth-salesforce'
 require 'pry'
 require_relative '../global_utilities/global_utilities'
 
-  ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
-  ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
+ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
+ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
 class SalesForceApp < Sinatra::Base
   set env: :development
   set port: 4567
@@ -54,16 +54,6 @@ class SalesForceApp < Sinatra::Base
       user = DB::User.first_or_create#(salesforce_id: env['omniauth.auth']['extra']['user_id'])
       user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
       user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-      puts "*"*88
-      puts "refresh token: #{env['omniauth.auth']['credentials']['refresh_token']}"
-      puts "*"*88
-      puts "*"*88
-      puts "access token: #{env['omniauth.auth']['credentials']['token']}"
-      puts "*"*88
-      user.save
-      puts "&"*88
-      puts user.inspect
-      puts "&"*88
       session[:auth_hash] = env['omniauth.auth']
     elsif params[:provider] == 'box'
       creds = Boxr::get_tokens(params['code'])
@@ -89,7 +79,7 @@ class SalesForceApp < Sinatra::Base
 
   private
 
-  def create_client(creds, user: DB::User.first_or_create)
+  def create_client(creds, user: DB::User.first)
     user.box_access_token   = creds.fetch('access_token')
     user.box_refresh_token  = creds.fetch('refresh_token')
     user.save

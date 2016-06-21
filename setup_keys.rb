@@ -13,8 +13,11 @@ class SetupKeys
   def initialize
     @work          = parse_args
     @agent         = Watir::Browser.new :chrome
+    @sf_domain     = CredService.creds.salesforce.instance_url
+    @sf_username   = CredService.creds.user.salesforce.username
+    @sf_password   = CredService.creds.user.salesforce.password
     @ngrok_page    = 'http://localhost:4040/status'
-    @download_page = 'https://na34.salesforce.com/02u?retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevTools&setupid=TabSet'
+    @download_page = @sf_domain + '/02u?retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevTools&setupid=TabSet'
     @box_page      = 'https://reedhein.app.box.com/developers/services'
     @ngrok_tunnel  = find_tunnel
     begin
@@ -38,8 +41,8 @@ class SetupKeys
 
   def salesforce
     @agent.goto(@download_page)
-    @agent.text_field(id: 'username').when_present.set CredService.creds.user.salesforce.username
-    @agent.text_field(id: 'password').set CredService.creds.user.salesforce.password
+    @agent.text_field(id: 'username').when_present.set @sf_username
+    @agent.text_field(id: 'password').set @sf_password
     @agent.button(name: 'Login').click
     Watir::Wait.until { @agent.div(class: 'content').wait_until_present }
     @agent.links(text: 'UtilityApp').first.click
@@ -60,7 +63,7 @@ class SetupKeys
 
   def box
     @agent.goto(@box_page)
-    @agent.text_field(name: 'login').when_present.set    CredService.creds.user.box.username
+    @agent.text_field(name: 'login').when_present.set  CredService.creds.user.box.username
     @agent.text_field(name: 'password').set CredService.creds.user.box.password
     @agent.button(type: 'submit').click
     @agent.button(id: /button_edit_application_/).when_present.click
@@ -83,6 +86,12 @@ class SetupKeys
       box
       authenticate_box
     when 'sf'
+      salesforce
+      authenticate_salesforce
+    when 'sandbox'
+      @sf_domain   = CredService.creds.salesforce.sandbox.instance_url
+      @sf_username = CredService.creds.user.salesforce.sandbox.username
+      @sf_password = CredService.creds.user.salesforce.sandbox.password
       salesforce
       authenticate_salesforce
     when 'box'
