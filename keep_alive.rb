@@ -11,3 +11,4 @@ class KeepAlive
 
   end
 end
+KeepAlive.new if __FILE__==$0
