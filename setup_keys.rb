@@ -16,11 +16,10 @@ class SetupKeys
     @ngrok_page    = 'http://localhost:4040/status'
     @download_page = 'https://na34.salesforce.com/02u?retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevTools&setupid=TabSet'
     @box_page      = 'https://reedhein.app.box.com/developers/services'
-    @ngrok_tunnel = find_tunnel
+    @ngrok_tunnel  = find_tunnel
     begin
       do_work
     rescue Net::ReadTimeout
-      sleep 15
       retry
     rescue => e
       puts e
@@ -32,7 +31,6 @@ class SetupKeys
 
   def find_tunnel
     agent.goto(@ngrok_page)
-    sleep 15
     document = agent.html
     doc = Nokogiri::HTML(document)
     doc.at('table:first tr:first td:last').text.strip
@@ -40,7 +38,6 @@ class SetupKeys
 
   def salesforce
     @agent.goto(@download_page)
-    sleep 15
     @agent.text_field(id: 'username').when_present.set CredService.creds.user.salesforce.username
     @agent.text_field(id: 'password').set CredService.creds.user.salesforce.password
     @agent.button(name: 'Login').click
@@ -54,14 +51,15 @@ class SetupKeys
       Watir::Wait.until { @agent.textarea(id: /callback/).wait_until_present }
       callback_text_field = @agent.textarea(id: /callback/)
       callback_text_field.value = @ngrok_tunnel.to_s + '/auth/salesforce/callback'
+      sleep 2
       agent.button(text: "Save").click
+      sleep 2
       agent.button(text: "Continue").when_present.click
     end
   end
 
   def box
     @agent.goto(@box_page)
-    sleep 15
     @agent.text_field(name: 'login').when_present.set    CredService.creds.user.box.username
     @agent.text_field(name: 'password').set CredService.creds.user.box.password
     @agent.button(type: 'submit').click
@@ -70,6 +68,7 @@ class SetupKeys
     box_field = @agent.text_field(id: 'field_oauth2_redirect_uri')
     current_value = box_field.value
     unless URI.parse(@ngrok_tunnel).host == URI.parse(current_value).host
+      sleep 1
       box_field.set(@ngrok_tunnel.to_s + '/auth/box/callback')
       @agent.button(id: 'save_service_button').when_present.click
     end
@@ -101,14 +100,12 @@ class SetupKeys
 
   def authenticate_salesforce
     @agent.goto(@ngrok_tunnel)
-    sleep 15
     Watir::Wait.until { @agent.h1(text: 'Reed Hein Oauth service').wait_until_present }
     while (URI.parse(@agent.url).host == URI.parse(@ngrok_tunnel).host) && agent.text.include?('You are NOT authenticated in salesforce')  do
       @agent.button(id: 'salesforce_auth').when_present.click
       puts 'waiting for salesforce to update'
       sleep 55
       @agent.goto(@ngrok_tunnel) if URI.parse(@agent.url).host != URI.parse(@ngrok_tunnel).host
-      sleep 15
       sleep 5
     end
     `say sales force authorization token updated` if RbConfig::CONFIG['host_os'] =~ /darwin/
@@ -116,15 +113,12 @@ class SetupKeys
 
   def authenticate_box
     @agent.goto(@ngrok_tunnel)
-    sleep 15
     sleep 2
     while (URI.parse(@agent.url).host == URI.parse(@ngrok_tunnel).host) && agent.text.include?('You are NOT authenticated in box')  do
       @agent.button(id: 'box_auth').when_present.click
+      sleep 2
       @agent.button(id: 'consent_accept_button').when_present.click
-      # sleep 60
-      # puts 'waiting for box to update'
       @agent.goto(@ngrok_tunnel) if URI.parse(@agent.url).host != URI.parse(@ngrok_tunnel).host
-    sleep 15
       sleep 5
     end
 
