@@ -13,9 +13,9 @@ class SetupKeys
   def initialize
     @work          = parse_args
     @agent         = Watir::Browser.new :chrome
-    @sf_domain     = CredService.creds.salesforce.instance_url
-    @sf_username   = CredService.creds.user.salesforce.username
-    @sf_password   = CredService.creds.user.salesforce.password
+    @sf_domain     = CredService.creds.salesforce.production.instance_url
+    @sf_username   = CredService.creds.user.salesforce.production.username
+    @sf_password   = CredService.creds.user.salesforce.production.password
     @ngrok_page    = 'http://localhost:4040/status'
     @download_page = @sf_domain + '/02u?retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevTools&setupid=TabSet'
     @box_page      = 'https://reedhein.app.box.com/developers/services'
@@ -47,7 +47,7 @@ class SetupKeys
     Watir::Wait.until { @agent.div(class: 'content').wait_until_present }
     @agent.links(text: 'UtilityApp').first.click
     a = Nokogiri::HTML(@agent.html)
-    current_value = URI.parse(a.search('td.dataCol.last:last').text)
+    current_value = URI.parse(a.search('td.dataCol.last:last').text.squish)
     new_value     = URI.parse(@ngrok_tunnel)
     unless new_value.host == current_value.host
       @agent.button(text: 'Edit').when_present.click
@@ -57,7 +57,10 @@ class SetupKeys
       sleep 2
       agent.button(text: "Save").click
       sleep 2
-      agent.button(text: "Continue").when_present.click
+      begin
+        agent.button(text: "Continue").when_present.click
+      rescue
+      end
     end
   end
 
@@ -89,9 +92,10 @@ class SetupKeys
       salesforce
       authenticate_salesforce
     when 'sandbox'
-      @sf_domain   = CredService.creds.salesforce.sandbox.instance_url
-      @sf_username = CredService.creds.user.salesforce.sandbox.username
-      @sf_password = CredService.creds.user.salesforce.sandbox.password
+      @sf_domain     = CredService.creds.salesforce.sandbox.instance_url
+      @download_page = @sf_domain + '/02u?retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevTools&setupid=TabSet'
+      @sf_username   = CredService.creds.user.salesforce.sandbox.username
+      @sf_password   = CredService.creds.user.salesforce.sandbox.password
       salesforce
       authenticate_salesforce
     when 'box'
@@ -143,6 +147,8 @@ class SetupKeys
       'box'
     when /salesforce|sf/
       'sf'
+    when 'sandbox'
+      'sandbox'
     else
       'all'
     end

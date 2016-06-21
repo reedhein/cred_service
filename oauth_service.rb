@@ -16,7 +16,7 @@ class SalesForceApp < Sinatra::Base
   set :bind, '0.0.0.0'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    provider :salesforce, CredService.creds.salesforce.api_key , CredService.creds.salesforce.api_secret
+    provider :salesforce, CredService.creds.salesforce.production.api_key , CredService.creds.salesforce.production.api_secret
   end
 
   post '/authenticate/:provider' do
