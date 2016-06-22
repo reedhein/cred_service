@@ -11,6 +11,7 @@ require '../global_utilities/global_utilities'
 class SetupKeys
   attr_reader :agent 
   def initialize
+    @initial_wait  = true
     @work          = parse_args
     @agent         = Watir::Browser.new :chrome
     @sf_domain     = CredService.creds.salesforce.production.instance_url
@@ -112,6 +113,11 @@ class SetupKeys
   private
 
   def authenticate_salesforce
+    if @initial_wait == true
+      puts 'sleeping for 10 minutes'
+      sleep 600
+    end
+    @initial_wait = false
     @agent.goto(@ngrok_tunnel)
     Watir::Wait.until { @agent.h1(text: 'Reed Hein Oauth service').wait_until_present }
     while (URI.parse(@agent.url).host == URI.parse(@ngrok_tunnel).host) && agent.text.include?('You are NOT authenticated in salesforce')  do
