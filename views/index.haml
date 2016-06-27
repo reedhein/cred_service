@@ -6,6 +6,14 @@
   %h3{id: 'salesforce_user'}
     #{session[:auth_hash][:extra][:username]}
 %hr
+- if session[:sanbox] == nil
+  %h3 You are NOT authenticated in Sandbox
+  %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate/sandbox", :method => "post"}
+    %button{id: 'salesforce_auth'} Authenticate using your sandbox credentials
+- else
+  %h3{id: 'salesforce_user'}
+    #{session[:auth_hash][:extra][:username]}
+%hr
 - if session[:box_user] == nil
   %h3 You are NOT authenticated in box
   %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate/box", :method => "post"}
