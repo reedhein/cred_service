@@ -1,22 +1,39 @@
 require 'rubygems'
-require 'asciiart'
 require 'sinatra'
 require 'haml'
 require 'boxr'
 require 'ruby-growl'
 require 'omniauth-salesforce'
 require 'pry'
-require_relative '../global_utilities/global_utilities'
+require 'thin'
+require_relative '../global_utils/global_utilities'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
 class SalesForceApp < Sinatra::Base
   set env: :development
+  set logging: true
   set port: 4567
-  set :bind, '0.0.0.0'
+  set bind: '0.0.0.0'
+  set server: 'thin'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    provider :salesforce, CredService.creds.salesforce.production.api_key , CredService.creds.salesforce.production.api_secret
+    environment_service = CredService.creds.salesforce.send(($environment || :production))
+    puts $environment
+    binding.pry
+    provider :salesforce, environment_service.api_key , environment_service.api_secret
+  end
+
+  def self.run!
+    $environment = ARGV[0] || 'production'
+    super do |server|
+      server.ssl = true
+      server.ssl_options = {
+        cert_chain_file:  "/etc/letsencrypt/live/zombiegestation.com/fullchain.pem",
+        private_key_file: "/etc/letsencrypt/live/zombiegestation.com/privkey.pem",
+        verify_peer:      false
+      }
+    end
   end
 
   post '/authenticate/:provider' do
@@ -63,6 +80,7 @@ class SalesForceApp < Sinatra::Base
     else
       binding.pry
     end
+    user.save
     redirect '/' unless session[:auth_hash] == nil
   end
 
@@ -82,7 +100,6 @@ class SalesForceApp < Sinatra::Base
   def create_client(creds, user: DB::User.first)
     user.box_access_token   = creds.fetch('access_token')
     user.box_refresh_token  = creds.fetch('refresh_token')
-    user.save
     puts "User update"
     client = Boxr::Client.new(user.box_access_token,
               refresh_token: creds.fetch('refresh_token'),
