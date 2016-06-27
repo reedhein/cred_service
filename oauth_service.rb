@@ -10,6 +10,12 @@ require_relative '../global_utils/global_utilities'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
+SETUP_PROC= lambda do |env|
+  request = Rack::Request.new(env)
+  binding.pry
+  env['omniauth.strategy'].options[:consumer_key] = request
+  env['omniauth.strategy'].options[:consumer_secret] = request
+end
 class SalesForceApp < Sinatra::Base
   set env: :development
   set logging: true
@@ -18,8 +24,7 @@ class SalesForceApp < Sinatra::Base
   set server: 'thin'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    environment_service = CredService.creds.salesforce.send(($environment.to_sym || :production))
-    provider :salesforce, environment_service.api_key , environment_service.api_secret , provider_ignores_state: true
+    provider :salesforce, setup: SETUP_PROC
   end
 
   def self.run!

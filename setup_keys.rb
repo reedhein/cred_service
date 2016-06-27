@@ -156,10 +156,12 @@ class SetupKeys
     when 'sandbox'
       'sandbox'
     else
-      'all'
+      # 'all'
+      'sandbox'
     end
   end
 end
 
 a = SetupKeys.new
 puts 'finished'
+
