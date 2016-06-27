@@ -12,9 +12,8 @@ ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
 SETUP_PROC= lambda do |env|
   request = Rack::Request.new(env)
-  binding.pry
-  env['omniauth.strategy'].options[:consumer_key] = request
-  env['omniauth.strategy'].options[:consumer_secret] = request
+  env['omniauth.strategy'].options[:consumer_key]    = CredService.creds.salesforce.public_send(request.params['environment'].to_sym).apt_key
+  env['omniauth.strategy'].options[:consumer_secret] = CredService.creds.salesforce.public_send(request.params['environment'].to_sym.apt_secret
 end
 class SalesForceApp < Sinatra::Base
   set env: :development
@@ -45,7 +44,8 @@ class SalesForceApp < Sinatra::Base
       auth_params = {
         :display => 'page',
         :immediate => 'false',
-        :scope => 'full refresh_token'
+        :scope => 'full refresh_token',
+        environment: 'sandbox'
       }
       auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
       redirect "/auth/salesforce?#{auth_params}"
@@ -53,13 +53,11 @@ class SalesForceApp < Sinatra::Base
       oauth_url = Boxr::oauth_url(URI.encode_www_form_component(CredService.creds.box.token))
       redirect oauth_url
     when 'sandbox'
-      use OmniAuth::Builder do
-        provider :salesforce, CredService.creds.salesforce.sandbox.api_key, CredService.creds.salesforce.sandbox.api_secret
-      end
       auth_params = {
-        :display => 'page',
-        :immediate => 'false',
-        :scope => 'full refresh_token'
+        display:     'page',
+        immediate:   'false',
+        scope:       'full refresh_token',
+        environment: 'sandbox'
       }
       auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
       redirect "/auth/salesforce?#{auth_params}"
