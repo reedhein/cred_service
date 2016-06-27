@@ -10,13 +10,19 @@ require_relative '../global_utilities/global_utilities'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
+SETUP_PROC= lambda do |env|
+  request = Rack::Request.new(env)
+  binding.pry
+  env['omniauth.strategy'].options[:consumer_key] = request
+  env['omniauth.strategy'].options[:consumer_secret] = request
+end
 class SalesForceApp < Sinatra::Base
   set env: :development
   set port: 4567
   set :bind, '0.0.0.0'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    provider :salesforce, CredService.creds.salesforce.production.api_key , CredService.creds.salesforce.production.api_secret
+    provider :salesforce, setup: SETUP_PROC
   end
 
   post '/authenticate/:provider' do
