@@ -1,4 +1,4 @@
-require_relative '../global_utilities/global_utilities'
+require_relative '../global_utils/global_utilities'
 class KeepAlive
   def initialize
     @sf_client  = Utils::SalesForce::Client.instance
