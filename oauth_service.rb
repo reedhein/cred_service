@@ -32,6 +32,17 @@ class SalesForceApp < Sinatra::Base
     when 'box'
       oauth_url = Boxr::oauth_url(URI.encode_www_form_component(CredService.creds.box.token))
       redirect oauth_url
+    when 'sandbox'
+      use OmniAuth::Builder do
+        provider :salesforce, CredService.creds.salesforce.sandbox.api_key, CredService.creds.salesforce.sandbox.api_secret
+      end
+      auth_params = {
+        :display => 'page',
+        :immediate => 'false',
+        :scope => 'full refresh_token'
+      }
+      auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
+      redirect "/auth/salesforce?#{auth_params}"
     end
   end
 
