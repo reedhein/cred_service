@@ -18,10 +18,8 @@ class SalesForceApp < Sinatra::Base
   set server: 'thin'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    environment_service = CredService.creds.salesforce.send(($environment || :production))
-    puts $environment
-    binding.pry
-    provider :salesforce, environment_service.api_key , environment_service.api_secret
+    environment_service = CredService.creds.salesforce.send(($environment.to_sym || :production))
+    provider :salesforce, environment_service.api_key , environment_service.api_secret , provider_ignores_state: true
   end
 
   def self.run!
@@ -68,10 +66,7 @@ class SalesForceApp < Sinatra::Base
 
   get '/auth/:provider/callback' do
     if params[:provider] == 'salesforce'
-      user = DB::User.first_or_create#(salesforce_id: env['omniauth.auth']['extra']['user_id'])
-      user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
-      user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-      session[:auth_hash] = env['omniauth.auth']
+      save_salesforce_credentials
     elsif params[:provider] == 'box'
       creds = Boxr::get_tokens(params['code'])
       client = create_client(creds)
@@ -80,7 +75,6 @@ class SalesForceApp < Sinatra::Base
     else
       binding.pry
     end
-    user.save
     redirect '/' unless session[:auth_hash] == nil
   end
 
@@ -96,6 +90,25 @@ class SalesForceApp < Sinatra::Base
   end
 
   private
+
+  def save_salesforce_credentials
+    user = DB::User.Doug
+    begin
+      if $environment == 'sandbox'
+        user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
+        user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+      elsif $environment == 'production'
+        user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
+        user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+      else
+        fail "don't know how to handle this environment"
+      end
+    rescue => e
+      binding.pry
+    end
+    user.save
+    session[:auth_hash] = env['omniauth.auth']
+  end
 
   def create_client(creds, user: DB::User.first)
     user.box_access_token   = creds.fetch('access_token')
