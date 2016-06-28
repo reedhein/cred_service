@@ -87,7 +87,7 @@ class SalesForceApp < Sinatra::Base
     else
       binding.pry
     end
-    redirect '/' unless session[:auth_hash] == nil
+    redirect '/'
   end
 
   get '/error' do
