@@ -24,7 +24,6 @@ class SalesForceApp < Sinatra::Base
   end
 
   def self.run!
-    $environment = ARGV[0] || 'production'
     super do |server|
       server.ssl = true
       server.ssl_options = {
