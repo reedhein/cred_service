@@ -6,7 +6,7 @@ require 'ruby-growl'
 require 'omniauth-salesforce'
 require 'pry'
 require 'thin'
-require_relative '../global_utils/global_utilities'
+require_relative '../global_utils/global_utils'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
@@ -118,6 +118,7 @@ class SalesForceApp < Sinatra::Base
         fail "don't know how to handle this environment"
       end
     rescue => e
+      puts e.backtrace
       binding.pry
     end
     user.save
