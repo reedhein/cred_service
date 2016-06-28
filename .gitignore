@@ -36,3 +36,4 @@ build/
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
 >>>>>>> 87f71823e54f78a0a43dac38d8bab8d864d26b74
+*.swp

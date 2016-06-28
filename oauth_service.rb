@@ -10,11 +10,7 @@ require_relative '../global_utils/global_utilities'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
-SETUP_PROC= lambda do |env|
-  request = Rack::Request.new(env)
-  env['omniauth.strategy'].options[:consumer_key]    = CredService.creds.salesforce.public_send(request.params['environment'].to_sym).apt_key
-  env['omniauth.strategy'].options[:consumer_secret] = CredService.creds.salesforce.public_send(request.params['environment'].to_sym.apt_secret
-end
+
 class SalesForceApp < Sinatra::Base
   set env: :development
   set logging: true
@@ -23,7 +19,8 @@ class SalesForceApp < Sinatra::Base
   set server: 'thin'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    provider :salesforce, setup: SETUP_PROC
+    provider :salesforce, CredService.creds.salesforce.production.api_key, CredService.creds.salesforce.production.api_secret, provider_ignores_state: true
+    provider OmniAuth::Strategies::SalesforceSandbox, CredService.creds.salesforce.sandbox.api_key, CredService.creds.salesforce.sandbox.api_secret, provider_ignores_state: true
   end
 
   def self.run!
@@ -45,7 +42,6 @@ class SalesForceApp < Sinatra::Base
         :display => 'page',
         :immediate => 'false',
         :scope => 'full refresh_token',
-        environment: 'sandbox'
       }
       auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
       redirect "/auth/salesforce?#{auth_params}"
@@ -57,10 +53,9 @@ class SalesForceApp < Sinatra::Base
         display:     'page',
         immediate:   'false',
         scope:       'full refresh_token',
-        environment: 'sandbox'
       }
       auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
-      redirect "/auth/salesforce?#{auth_params}"
+      redirect "/auth/salesforcesandbox?#{auth_params}"
     end
   end
 
@@ -79,9 +74,12 @@ class SalesForceApp < Sinatra::Base
   end
 
   get '/auth/:provider/callback' do
-    if params[:provider] == 'salesforce'
-      save_salesforce_credentials
-    elsif params[:provider] == 'box'
+    case params[:provider] 
+    when 'salesforce'
+      save_salesforce_credentials('salesforce')
+    when 'salesforcesandbox'
+      save_salesforce_credentials('salesforcesandbox')
+    when 'box'
       creds = Boxr::get_tokens(params['code'])
       client = create_client(creds)
       session[:box_user] = client.current_user.fetch('name')
@@ -105,15 +103,17 @@ class SalesForceApp < Sinatra::Base
 
   private
 
-  def save_salesforce_credentials
+  def save_salesforce_credentials(callback)
     user = DB::User.Doug
     begin
-      if $environment == 'sandbox'
+      if callback == 'salesforce'
         user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
         user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-      elsif $environment == 'production'
-        user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
-        user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+        session[:production] = env['omniauth.auth']
+      elsif callback == 'salesforcesandbox'
+        user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
+        user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+        session[:sandbox] = env['omniauth.auth']
       else
         fail "don't know how to handle this environment"
       end
@@ -121,7 +121,6 @@ class SalesForceApp < Sinatra::Base
       binding.pry
     end
     user.save
-    session[:auth_hash] = env['omniauth.auth']
   end
 
   def create_client(creds, user: DB::User.first)
