@@ -106,8 +106,8 @@ class SalesForceApp < Sinatra::Base
     user = DB::User.Doug
     begin
       if callback == 'salesforce'
-        user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
-        user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+        user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
+        user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
         session[:production] = env['omniauth.auth']
       elsif callback == 'salesforcesandbox'
         user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
