@@ -6,7 +6,7 @@ require 'ruby-growl'
 require 'omniauth-salesforce'
 require 'pry'
 require 'thin'
-require_relative '../global_utils/global_utils'
+require_relative './global_utils/global_utils'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
