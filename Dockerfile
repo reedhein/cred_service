@@ -39,5 +39,5 @@ WORKDIR /opt/cred_service
 
 EXPOSE 4567
 
-CMD bundle exec ruby cred_service.rb
+CMD bundle exec ruby oauth_service.rb
 

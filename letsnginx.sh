@@ -1,7 +1,10 @@
+docker kill lets-nginx
+docker rm lets-nginx
 docker run --detach \
   --name lets-nginx \
+  --link oauth_server:oauth_server \
   --env EMAIL=doug@reedhein.com \
-  --env DOMAIN=zombiegestation.com \
+  --env DOMAIN=oauth.zombiegestation.com \
   --env UPSTREAM=oauth_server:4567 \
   --publish 80:80 \
   --publish 443:443 \

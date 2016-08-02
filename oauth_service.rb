@@ -25,14 +25,14 @@ class SalesForceApp < Sinatra::Base
 
   def self.run!
     $environment = ARGV[0] || 'production'
-    super do |server|
-      server.ssl = true
-      server.ssl_options = {
-        cert_chain_file:  "/etc/letsencrypt/live/zombiegestation.com/fullchain.pem",
-        private_key_file: "/etc/letsencrypt/live/zombiegestation.com/privkey.pem",
-        verify_peer:      false
-      }
-    end
+    # super do |server|
+    #   server.ssl = true
+    #   server.ssl_options = {
+    #     cert_chain_file:  "/etc/letsencrypt/live/zombiegestation.com/fullchain.pem",
+    #     private_key_file: "/etc/letsencrypt/live/zombiegestation.com/privkey.pem",
+    #     verify_peer:      false
+    #   }
+    # end
   end
 
   post '/authenticate/:provider' do
