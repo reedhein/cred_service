@@ -4,11 +4,11 @@ MAINTAINER Doug Headley <doug@reedhein.com>
 LABEL container=cred_service
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -y build-essential git bcrypt libtool openssl automake curl\
-	zlib1g-dev zlib1g zlibc ruby-dev libssl-dev libyaml-dev libsqlite3-0\
-	libsqlite3-dev libxml2-dev libxslt-dev autoconf libc6-dev sqlite3\
-	libreadline-dev libreadline6 libreadline6-dev libgmp-dev libgmp3-dev\
-	ncurses-dev g++ bison gcc
+RUN apt-get install -y build-essential git bcrypt libtool openssl automake curl \
+  zlib1g-dev zlib1g zlibc ruby-dev libssl-dev libyaml-dev libsqlite3-0 \
+  libsqlite3-dev libxml2-dev libxslt-dev autoconf libc6-dev sqlite3 \
+  libreadline-dev libreadline6 libreadline6-dev libgmp-dev libgmp3-dev \
+  ncurses-dev g++ bison gcc
 
 ENV CONFIGURE_OPTS --disable-install-rdoc
 
@@ -32,12 +32,12 @@ RUN gem install bundler
 WORKDIR /tmp
 ADD ./Gemfile Gemfile
 ADD ./Gemfile.lock Gemfile.lock
-RUN bundle
+RUN bundle install
 
 ADD ./ /opt/cred_service
 WORKDIR /opt/cred_service
 
 EXPOSE 4567
 
-CMD bundle exec ruby cred_service.rb
+CMD bundle exec ruby oauth_service.rb -o 0.0.0.0
 

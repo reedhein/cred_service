@@ -6,7 +6,7 @@ require 'ruby-growl'
 require 'omniauth-salesforce'
 require 'pry'
 require 'thin'
-require_relative '../global_utils/global_utils'
+require_relative './global_utils/global_utils'
 
 ENV['BOX_CLIENT_ID']     = CredService.creds.box.client_id
 ENV['BOX_CLIENT_SECRET'] = CredService.creds.box.client_secret
@@ -23,16 +23,17 @@ class SalesForceApp < Sinatra::Base
     provider OmniAuth::Strategies::SalesforceSandbox, CredService.creds.salesforce.sandbox.api_key, CredService.creds.salesforce.sandbox.api_secret, provider_ignores_state: true
   end
 
-  def self.run!
-    super do |server|
-      server.ssl = true
-      server.ssl_options = {
-        cert_chain_file:  "/etc/letsencrypt/live/zombiegestation.com/fullchain.pem",
-        private_key_file: "/etc/letsencrypt/live/zombiegestation.com/privkey.pem",
-        verify_peer:      false
-      }
-    end
-  end
+  # def self.run!
+    $environment = ARGV[0] || 'production'
+    # super do |server|
+    #   server.ssl = true
+    #   server.ssl_options = {
+    #     cert_chain_file:  "/etc/letsencrypt/live/zombiegestation.com/fullchain.pem",
+    #     private_key_file: "/etc/letsencrypt/live/zombiegestation.com/privkey.pem",
+    #     verify_peer:      false
+    #   }
+    # end
+  # end
 
   post '/authenticate/:provider' do
     case params[:provider].downcase 
