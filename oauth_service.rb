@@ -23,7 +23,7 @@ class SalesForceApp < Sinatra::Base
     provider OmniAuth::Strategies::SalesforceSandbox, CredService.creds.salesforce.sandbox.api_key, CredService.creds.salesforce.sandbox.api_secret, provider_ignores_state: true
   end
 
-  def self.run!
+  # def self.run!
     $environment = ARGV[0] || 'production'
     # super do |server|
     #   server.ssl = true
@@ -33,7 +33,7 @@ class SalesForceApp < Sinatra::Base
     #     verify_peer:      false
     #   }
     # end
-  end
+  # end
 
   post '/authenticate/:provider' do
     case params[:provider].downcase 

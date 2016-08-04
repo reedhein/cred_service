@@ -4,7 +4,7 @@ docker run --detach \
   --name lets-nginx \
   --link oauth_server:oauth_server \
   --env EMAIL=doug@reedhein.com \
-  --env DOMAIN=oauth.zombiegestation.com \
+  --env DOMAIN=teamkatlas.com \
   --env UPSTREAM=oauth_server:4567 \
   --publish 80:80 \
   --publish 443:443 \
