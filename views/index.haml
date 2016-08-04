@@ -5,6 +5,7 @@
 - else
   %h3{id: 'salesforce_user'}
     #{session[:production][:extra][:username]}
+  #{session[:production]}
 %hr
 - if session[:sandbox] == nil
   %h3 You are NOT authenticated in Sandbox
