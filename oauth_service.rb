@@ -105,6 +105,7 @@ class SalesForceApp < Sinatra::Base
 
   def save_salesforce_credentials(callback)
     user = DB::User.Doug
+    binding.pry
     begin
       if callback == 'salesforce'
         user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
