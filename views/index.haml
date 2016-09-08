@@ -29,7 +29,7 @@
     %button{id: 'box_auth'} Authenticate using your box credentials
 - else
   %h3{id: 'box_user'}
-    #{session['box_user']}
+    #{session['box_user'][:name]}
   %br
   %code
     DB::User.Doug.update(:box_auth_token, #{session[:box_user][:access_token]})
