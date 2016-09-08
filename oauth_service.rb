@@ -81,7 +81,6 @@ class SalesForceApp < Sinatra::Base
       save_salesforce_credentials('salesforcesandbox')
     when 'box'
       creds = Boxr::get_tokens(params['code'])
-      session[:box_user] = client.current_user.fetch('name')
       session[:box_user][:access_token]  = creds.fetch('access_token')
       session[:box_user][:refresh_token] = creds.fetch('refresh_token')
       redirect '/'
