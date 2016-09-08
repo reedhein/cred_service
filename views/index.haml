@@ -8,6 +8,12 @@
   token: #{session[:production]['credentials']['token'] }
   %br
   refresh_token: #{session[:production]['credentials']['refresh_token'] }
+  %br
+  %code
+    DB::User.Doug.update(:salesforce_auth_token, #{session[:production]['credentials']['token']})
+  %br
+  %code
+    DB::User.Doug.update(:salesforce_refresh_token, #{session[:production]['credentials']['refresh_token']})
 %hr
 - if session[:sandbox] == nil
   %h3 You are NOT authenticated in Sandbox
@@ -24,3 +30,9 @@
 - else
   %h3{id: 'box_user'}
     #{session['box_user']}
+  %br
+  %code
+    DB::User.Doug.update(:box_auth_token, #{session[:box_user][:access_token]})
+  %br
+  %code
+    DB::User.Doug.update(:box_refresh_token, #{session[:box_user][:refresh_token]})
