@@ -36,3 +36,6 @@
   %br
   %code
     DB::User.Doug.update(box_refresh_token: '#{session[:box_user][:refresh_token]}')
+%hr
+  %a{href: '/unauthenticate'}
+    kill sessions
