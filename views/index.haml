@@ -37,16 +37,5 @@
   %code
     DB::User.Doug.update(box_refresh_token: '#{session[:box_user][:refresh_token]}')
 %hr
-- if session[:box_user] == nil
-  %h3 You are NOT authenticated in kitten clicker box
-  %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate/box", :method => "post"}
-    %button{id: 'box_auth'} Authenticate using your box credentials
-- else
-  %h3{id: 'box_user'}
-    #{session['box_user'][:name]}
-  %br
-  %code
-    DB::User.Doug.update(box_auth_token: '#{session[:box_user][:access_token]}')
-  %br
-  %code
-    DB::User.Doug.update(box_refresh_token: '#{session[:box_user][:refresh_token]}')
+  %a{href: '/unauthenticate'}
+    kill sessions
