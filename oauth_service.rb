@@ -133,7 +133,6 @@ class SalesForceApp < Sinatra::Base
   def save_salesforce_credentials(callback)
     user = DB::User.first_or_create(email: env.dig('omniauth.auth', 'extra', 'email'))
     binding.pry unless user
-    begin
       if callback == 'salesforce'
         user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
         user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
@@ -147,11 +146,10 @@ class SalesForceApp < Sinatra::Base
       else
         fail "don't know how to handle this environment"
       end
-    rescue => e
-      puts e.backtrace
-      binding.pry
-    end
     user.save
+  rescue => e
+    puts e.backtrace
+    binding.pry
   end
 
   def create_box_client_from_creds(creds)
