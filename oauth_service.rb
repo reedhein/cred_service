@@ -132,20 +132,20 @@ class SalesForceApp < Sinatra::Base
 
   def save_salesforce_credentials(callback)
     user = DB::User.first_or_create(email: env.dig('omniauth.auth', 'extra', 'email'))
-    binding.pry unless user
-      if callback == 'salesforce'
-        user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
-        user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-        session[:salesforce] = {}
-        session[:salesforce][:email] = user.email
-      elsif callback == 'salesforcesandbox'
-        user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
-        user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-        session[:salesforcesandbox] = {}
-        session[:salesforcesandbox][:email] = user.email
-      else
-        fail "don't know how to handle this environment"
-      end
+    binding.pry #unless user
+    if callback == 'salesforce'
+      user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
+      user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+      session[:salesforce] = {}
+      session[:salesforce][:email] = user.email
+    elsif callback == 'salesforcesandbox'
+      user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
+      user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+      session[:salesforcesandbox] = {}
+      session[:salesforcesandbox][:email] = user.email
+    else
+      fail "don't know how to handle this environment"
+    end
     user.save
   rescue => e
     puts e.backtrace
