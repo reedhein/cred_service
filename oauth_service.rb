@@ -19,8 +19,16 @@ class SalesForceApp < Sinatra::Base
   set server: 'thin'
   use Rack::Session::Pool
   use OmniAuth::Builder do
-    provider :salesforce, CredService.creds.salesforce.production.api_key, CredService.creds.salesforce.production.api_secret, provider_ignores_state: true
-    provider OmniAuth::Strategies::SalesforceSandbox, CredService.creds.salesforce.sandbox.api_key, CredService.creds.salesforce.sandbox.api_secret, provider_ignores_state: true
+    # provider :salesforce, CredService.creds.salesforce.production.api_key, CredService.creds.salesforce.production.api_secret, provider_ignores_state: true
+    # provider OmniAuth::Strategies::SalesforceSandbox, CredService.creds.salesforce.sandbox.kitten_clicker.api_key, CredService.creds.salesforce.sandbox.kitten_clicker.api_secret, provider_ignores_state: true
+    provider :salesforce,
+      CredService.creds.salesforce.production.kitten_clicker_prod.api_key,
+      CredService.creds.salesforce.production.kitten_clicker_prod.api_secret,
+      provider_ignores_state: true
+    provider OmniAuth::Strategies::SalesforceSandbox,
+      CredService.creds.salesforce.production.kitten_clicker_prod.api_key,
+      CredService.creds.salesforce.production.kitten_clicker_prod.api_secret,
+      provider_ignores_state: true
   end
 
   # def self.run!
@@ -41,18 +49,21 @@ class SalesForceApp < Sinatra::Base
       auth_params = {
         :display => 'page',
         :immediate => 'false',
-        :scope => 'full refresh_token',
+        :scope => 'full',
       }
       auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
       redirect "/auth/salesforce?#{auth_params}"
     when 'box'
-      oauth_url = Boxr::oauth_url(URI.encode_www_form_component(CredService.creds.box.token))
+      oauth_url = Boxr::oauth_url(
+        URI.encode_www_form_component(CredService.creds.box.kitten_clicker.token),
+        client_id: CredService.creds.box.kitten_clicker.client_id
+      )
       redirect oauth_url
     when 'sandbox'
       auth_params = {
         display:     'page',
         immediate:   'false',
-        scope:       'full refresh_token',
+        scope:       'full',
       }
       auth_params = URI.escape(auth_params.collect{|k,v| "#{k}=#{v}"}.join('&'))
       redirect "/auth/salesforcesandbox?#{auth_params}"
@@ -80,11 +91,12 @@ class SalesForceApp < Sinatra::Base
     when 'salesforcesandbox'
       save_salesforce_credentials('salesforcesandbox')
     when 'box'
-      creds = Boxr::get_tokens(params['code'])
-      session[:box_user] = {}
-      session[:box_user][:name] = 'Doug Headley'
-      session[:box_user][:access_token]  = creds.fetch('access_token')
-      session[:box_user][:refresh_token] = creds.fetch('refresh_token')
+      # creds = Boxr::get_tokens(params['code'])
+      creds = Boxr::get_tokens(code=params[:code], client_id: CredService.creds.box.kitten_clicker.client_id, client_secret: CredService.creds.box.kitten_clicker.client_secret)
+      client = create_box_client_from_creds(creds)
+      user = populate_box_creds_to_db(client)
+      session[:box] = {}
+      session[:box][:email] = user.email
       redirect '/'
     else
       binding.pry
@@ -106,17 +118,19 @@ class SalesForceApp < Sinatra::Base
   private
 
   def save_salesforce_credentials(callback)
-    user = DB::User.Doug
-    binding.pry
+    user = DB::User.first_or_create(email: env.dig('omniauth.auth', 'extra', 'email'))
+    binding.pry unless user
     begin
       if callback == 'salesforce'
         user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
         user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-        session[:production] = env['omniauth.auth']
+        session[:salesforce] = {}
+        session[:salesforce][:email] = user.email
       elsif callback == 'salesforcesandbox'
         user.salesforce_sandbox_auth_token     = env['omniauth.auth']['credentials']['token']
         user.salesforce_sandbox_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
-        session[:sandbox] = env['omniauth.auth']
+        session[:salesforcesandbox] = {}
+        session[:salesforcesandbox][:email] = user.email
       else
         fail "don't know how to handle this environment"
       end
