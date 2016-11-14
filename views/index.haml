@@ -9,7 +9,7 @@
       %a.nav-link{href: '#'}
         Login
 .container-fluid{style: 'height: 100%; min-height: 100%'}
-  - if !session[:salesforce][:email].nil? && !session[:box][:email].nil?
+  - if session[:salesforce] && !session[:salesforce][:email].nil? && session[:box] && !session[:box][:email].nil?
     %a{href: 'http://10.10.0.204:4545/authenticate?' + @my_params }
   .row
     - if session[:salesforce] == nil
@@ -30,4 +30,3 @@
       .col-sm-6.col-md-6.col-xlg-6.offset-md-0.offset-lg-0.offset-xl-0{sytle: ''}
         .col-lg-3.offset-lg-4{style: 'padding: 25em 0em'}
           = session.inspect
-
