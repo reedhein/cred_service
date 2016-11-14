@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 MAINTAINER Doug Headley <doug@reedhein.com>
 
 LABEL container=cred_service
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt-get upgrade -y
 RUN apt-get install -y build-essential git bcrypt libtool openssl automake curl \
   zlib1g-dev zlib1g zlibc ruby-dev libssl-dev libyaml-dev libsqlite3-0 \
@@ -23,6 +23,8 @@ RUN curl -O http://ftp.ruby-lang.org/pub/ruby/2.3/ruby-${RUBY_VERSION}.tar.gz &&
     rm -r ruby-${RUBY_VERSION} ruby-${RUBY_VERSION}.tar.gz && \
     echo 'gem: --no-document' > /usr/local/etc/gemrcdoc
 
+RUN apt-get install -y imagemagick
+RUN apt-get install -y libmagickwand-dev
 RUN apt-get clean
 # Clean up downloaded packages
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
