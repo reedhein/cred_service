@@ -2,6 +2,7 @@ module DB
   class User
     include DataMapper::Resource
     property :id, Serial
+    property :email, String, length: 255, index: true, unique: true
     property :salesforce_id, String
     property :salesforce_auth_token, String, length: 255
     property :salesforce_refresh_token, String, length: 255
