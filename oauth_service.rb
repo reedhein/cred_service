@@ -132,7 +132,7 @@ class SalesForceApp < Sinatra::Base
 
   def save_salesforce_credentials(callback)
     user = DB::User.first_or_create(email: env.dig('omniauth.auth', 'extra', 'email'))
-    binding.pry #unless user
+    binding.pry unless user
     if callback == 'salesforce'
       user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
       user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
