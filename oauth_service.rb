@@ -19,12 +19,12 @@ class SalesForceApp < Sinatra::Base
     # provider :salesforce, CredService.creds.salesforce.production.api_key, CredService.creds.salesforce.production.api_secret, provider_ignores_state: true
     # provider OmniAuth::Strategies::SalesforceSandbox, CredService.creds.salesforce.sandbox.kitten_clicker.api_key, CredService.creds.salesforce.sandbox.kitten_clicker.api_secret, provider_ignores_state: true
     provider :salesforce,
-      CredService.creds.salesforce.production.kitten_clicker_prod.api_key,
-      CredService.creds.salesforce.production.kitten_clicker_prod.api_secret,
+      CredService.creds.salesforce.production.utility_app.api_key,
+      CredService.creds.salesforce.production.utility_app.api_secret,
       provider_ignores_state: true
     provider OmniAuth::Strategies::SalesforceSandbox,
-      CredService.creds.salesforce.production.kitten_clicker_prod.api_key,
-      CredService.creds.salesforce.production.kitten_clicker_prod.api_secret,
+      CredService.creds.salesforce.production.utility_app.api_key,
+      CredService.creds.salesforce.production.utility_app.api_secret,
       provider_ignores_state: true
   end
 
