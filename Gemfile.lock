@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/reedhein/rubyzoho.git
-  revision: dde81bf4436dc7e4e12d5e5308819a442cd303ef
+  revision: 5a4a3ee1e1b17e565f3a5774bca6cc02cdcc3343
   specs:
-    rubyzoho (0.6.0)
+    rubyzoho (0.7.0)
       activemodel (>= 3.0)
       httmultiparty (>= 0.3)
       mime-types (>= 2.6)
@@ -13,14 +13,15 @@ GEM
   remote: https://rubygems.org/
   specs:
     Ascii85 (1.0.2)
-    activemodel (5.0.0)
-      activesupport (= 5.0.0)
-    activesupport (5.0.0)
+    activemodel (5.0.0.1)
+      activesupport (= 5.0.0.1)
+    activesupport (5.0.0.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.4.0)
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
     afm (0.2.2)
     awesome_print (1.7.0)
     bcrypt (3.1.11)
@@ -32,7 +33,7 @@ GEM
       httpclient (~> 2.5)
       jwt (~> 1.4)
       oj (~> 2.11)
-    byebug (9.0.5)
+    byebug (9.0.6)
     call-me (0.0.2.3)
       refining
     childprocess (0.5.9)
@@ -40,9 +41,9 @@ GEM
     classifier-reborn (2.0.4)
       fast-stemmer (~> 1.0)
     coderay (1.1.1)
-    commonwatir (4.0.0)
     concurrent-ruby (1.0.2)
-    daemons (1.2.3)
+    cookiejar (0.3.3)
+    daemons (1.2.4)
     data_mapper (1.2.0)
       dm-aggregates (~> 1.2.0)
       dm-constraints (~> 1.2.0)
@@ -60,6 +61,8 @@ GEM
       json
       multipart-post (~> 2.0.0)
     deepstruct (0.0.7)
+    dhash (0.0.2)
+      rmagick
     dm-aggregates (1.2.0)
       dm-core (~> 1.2.0)
     dm-constraints (1.2.0)
@@ -96,15 +99,34 @@ GEM
       dm-core (~> 1.2.0)
     do_sqlite3 (0.10.17)
       data_objects (= 0.10.17)
-    domain_name (0.5.20160615)
+    domain_name (0.5.20161021)
       unf (>= 0.0.5, < 1.0.0)
+    em-http-request (1.1.5)
+      addressable (>= 2.3.4)
+      cookiejar (!= 0.3.1)
+      em-socksify (>= 0.3)
+      eventmachine (>= 1.0.3)
+      http_parser.rb (>= 0.6.0)
+    em-socksify (0.3.1)
+      eventmachine (>= 1.0.0.beta.4)
     eventmachine (1.2.0.1)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.10.0)
-      faraday (>= 0.7.4, < 0.10)
+    faraday_middleware (0.10.1)
+      faraday (>= 0.7.4, < 1.0)
     fast-stemmer (1.0.2)
     fastercsv (1.5.5)
+    faye (1.2.3)
+      cookiejar (>= 0.3.0)
+      em-http-request (>= 0.3.0)
+      eventmachine (>= 0.12.0)
+      faye-websocket (>= 0.9.1)
+      multi_json (>= 1.0.0)
+      rack (>= 1.0.0)
+      websocket-driver (>= 0.5.1)
+    faye-websocket (0.10.4)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
     ffi (1.9.14)
     ffi-extra (0.1.0)
       ffi
@@ -113,53 +135,55 @@ GEM
     gmail (0.6.0)
       gmail_xoauth (>= 0.3.0)
       mail (>= 2.2.1)
-    gmail_xoauth (0.4.1)
+    gmail_xoauth (0.4.2)
       oauth (>= 0.3.6)
     grim (1.3.0)
     haml (4.0.7)
       tilt
     hashery (2.1.2)
-    hashie (3.4.4)
+    hashie (3.4.6)
     httmultiparty (0.3.16)
       httparty (>= 0.7.3)
       mimemagic
       multipart-post
-    http-cookie (1.0.2)
+    http-cookie (1.0.3)
       domain_name (~> 0.5)
+    http_parser.rb (0.6.0)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
-    httpclient (2.8.0)
+    httpclient (2.8.2.4)
     i18n (0.7.0)
     iso-639 (0.2.8)
     json (1.8.3)
     json_pure (1.8.3)
-    jwt (1.5.4)
+    jwt (1.5.6)
     macaddr (1.7.1)
       systemu (~> 2.6.2)
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
-    mechanize (2.7.4)
+    mechanize (2.7.5)
       domain_name (~> 0.5, >= 0.5.1)
       http-cookie (~> 1.0)
-      mime-types (>= 1.17.2, < 3)
+      mime-types (>= 1.17.2)
       net-http-digest_auth (~> 1.1, >= 1.1.1)
       net-http-persistent (~> 2.5, >= 2.5.2)
       nokogiri (~> 1.6)
       ntlm-http (~> 0.1, >= 0.1.1)
       webrobots (>= 0.0.9, < 0.2)
     method_source (0.8.2)
-    mime-types (2.99.2)
-    mimemagic (0.3.1)
+    mime-types (3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0521)
+    mimemagic (0.3.2)
     mini_portile2 (2.1.0)
-    minitest (5.9.0)
+    minitest (5.9.1)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
     net-http-persistent (2.9.4)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
     ntlm-http (0.1.1)
     oauth (0.5.1)
     oauth2 (1.2.0)
@@ -168,7 +192,7 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
-    oj (2.17.1)
+    oj (2.17.5)
     omniauth (1.3.1)
       hashie (>= 1.2, < 4)
       rack (>= 1.0, < 3)
@@ -184,7 +208,6 @@ GEM
       hashery (~> 2.0)
       ruby-rc4
       ttfunk
-    pkg-config (1.1.7)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -192,15 +215,17 @@ GEM
     pry-byebug (3.4.0)
       byebug (~> 9.0)
       pry (~> 0.10)
-    rack (1.6.4)
+    public_suffix (2.0.4)
+    rack (1.6.5)
     rack-protection (1.5.3)
       rack
     refining (0.0.5.5)
-    restforce (2.3.0)
+    restforce (2.4.2)
       faraday (~> 0.9.0)
       faraday_middleware (>= 0.8.8)
       hashie (>= 1.2.0, < 4.0)
-      json (>= 1.7.5, < 1.9.0)
+      json (>= 1.7.5)
+    rmagick (2.16.0)
     roxml (3.3.1)
       activesupport (>= 2.3.0)
       nokogiri (>= 1.3.3)
@@ -208,7 +233,7 @@ GEM
       uuid (~> 2.3, >= 2.3.5)
     ruby-rc4 (0.1.5)
     rubyzip (1.2.0)
-    selenium-webdriver (2.53.4)
+    selenium-webdriver (3.0.1)
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
@@ -239,13 +264,17 @@ GEM
     uuid (2.3.8)
       macaddr (~> 1.0)
     uuidtools (2.1.5)
-    watir (5.0.0)
-      commonwatir (~> 4)
+    watir (6.0.1)
+      selenium-webdriver (~> 3.0)
+    watir-scroll (0.2.0)
       watir-webdriver
-    watir-webdriver (0.9.1)
+    watir-webdriver (0.9.9)
       selenium-webdriver (>= 2.46.2)
     webrobots (0.1.2)
     websocket (1.2.3)
+    websocket-driver (0.6.4)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.2)
 
 PLATFORMS
   ruby
@@ -258,7 +287,9 @@ DEPENDENCIES
   data_mapper
   databasedotcom
   deepstruct
+  dhash
   dm-sqlite-adapter
+  faye
   gmail
   grim
   haml
@@ -276,6 +307,7 @@ DEPENDENCIES
   tesseract-ocr
   thin
   watir
+  watir-scroll
 
 BUNDLED WITH
    1.12.5
