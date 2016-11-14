@@ -112,6 +112,8 @@ class SalesForceApp < Sinatra::Base
       puts uri.query
       binding.pry
       redirect 'http://10.10.0.204:4545/authorize?' + uri.query
+    else
+      redirect '/'
     end
   end
 
