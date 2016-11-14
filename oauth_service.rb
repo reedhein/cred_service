@@ -138,6 +138,15 @@ class SalesForceApp < Sinatra::Base
     user.save
   end
 
+  def create_box_client_from_creds(creds)
+    client = Boxr::Client.new(creds.fetch('access_token'),
+              refresh_token: creds.fetch('refresh_token'),
+              client_id:     CredService.creds.box.kitten_clicker.client_id,
+              client_secret: CredService.creds.box.kitten_clicker.client_secret
+            )
+    client
+  end
+
   def create_client(creds, user: DB::User.first)
     user.box_access_token   = creds.fetch('access_token')
     user.box_refresh_token  = creds.fetch('refresh_token')
@@ -149,7 +158,6 @@ class SalesForceApp < Sinatra::Base
             )
     client
   end
-
 
   last_time_say_was_run = File.read('last_run.txt').strip
   unless Date.today.to_s == last_time_say_was_run
