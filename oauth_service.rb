@@ -52,8 +52,8 @@ class SalesForceApp < Sinatra::Base
       redirect "/auth/salesforce?#{auth_params}"
     when 'box'
       oauth_url = Boxr::oauth_url(
-        URI.encode_www_form_component(CredService.creds.box.kitten_clicker.token),
-        client_id: CredService.creds.box.kitten_clicker.client_id
+        URI.encode_www_form_component(CredService.creds.box.utility_app.token),
+        client_id: CredService.creds.box.utility_app.client_id
       )
       redirect oauth_url
     when 'sandbox'
@@ -89,7 +89,7 @@ class SalesForceApp < Sinatra::Base
       save_salesforce_credentials('salesforcesandbox')
     when 'box'
       # creds = Boxr::get_tokens(params['code'])
-      creds = Boxr::get_tokens(code=params[:code], client_id: CredService.creds.box.kitten_clicker.client_id, client_secret: CredService.creds.box.kitten_clicker.client_secret)
+      creds = Boxr::get_tokens(code=params[:code], client_id: CredService.creds.box.utility_app.client_id, client_secret: CredService.creds.box.utility_app.client_secret)
       client = create_box_client_from_creds(creds)
       user = populate_box_creds_to_db(client)
       session[:box] = {}
