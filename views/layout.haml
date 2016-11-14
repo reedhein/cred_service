@@ -1,11 +1,7 @@
 !!! 5
-%html{ :lang => "en"}
-  %head
-    %title= "omniauth service"
-    %meta{ :name => "viewport", :content => "width=device-width, initial-scale=1"}
-  %body
-    #page{:"data-role" => "page", :"data-title" => "omniauth salesforce example"}
-      #header{ :"data-role" => "header"}
-        %h1 Reed Hein Oauth service
-      #content{ :"data-role" => "content"}
-        = yield
+%head
+  %title Kitten Clicker login!
+  %link{ rel: 'stylesheet', href: 'stylesheets/bootstrap.css'}
+  %link{ rel: 'stylesheet', href: 'stylesheets/font-awesome.min.css' }
+%body{style: "background-color: #0C1017; background-image: url('domo_kun_and_tree_blossoms-wallpaper-1920x1080.jpg'); background-size: 100% 100% ; background-repeat:no-repeat; min-height: 70em"}
+  = yield
