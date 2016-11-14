@@ -159,6 +159,17 @@ class SalesForceApp < Sinatra::Base
     client
   end
 
+  def populate_box_creds_to_db(client)
+    email = client.current_user.login
+    user  = DB::User.first_or_create(email: email)
+    user.box_access_token   = client.access_token
+    user.box_refresh_token  = client.refresh_token
+    session[:box] = {}
+    session[:box][:email] = email
+    user.save
+    user
+  end
+
   last_time_say_was_run = File.read('last_run.txt').strip
   unless Date.today.to_s == last_time_say_was_run
     `say sushi is coming online` if RbConfig::CONFIG['host_os'] =~ /darwin/
