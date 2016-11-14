@@ -98,7 +98,7 @@ class SalesForceApp < Sinatra::Base
     else
       binding.pry
     end
-    if !session[:box][:email].nil? && !session[:salesforce][:email].nil?
+    if session[:box] && !session[:box][:email].nil? && session[:salesforce] && !session[:salesforce][:email].nil?
       user = DB::User.first(email: session[:box][:email])
       params =  {
                   salesforce_auth_token: user.salesforce_auth_token,
