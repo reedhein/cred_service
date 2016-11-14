@@ -108,6 +108,7 @@ class SalesForceApp < Sinatra::Base
                 }
       uri = Addressable::URI.new
       uri.query_values= params
+      @my_params = uri.query
       redirect 'http://10.10.0.204:4545/authorize?' + uri.query
     end
   end
