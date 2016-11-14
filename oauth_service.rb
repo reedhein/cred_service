@@ -6,6 +6,7 @@ require 'ruby-growl'
 require 'omniauth-salesforce'
 require 'pry'
 require 'thin'
+require 'addressable/uri'
 require_relative './global_utils/global_utils'
 
 class SalesForceApp < Sinatra::Base
@@ -94,11 +95,21 @@ class SalesForceApp < Sinatra::Base
       user = populate_box_creds_to_db(client)
       session[:box] = {}
       session[:box][:email] = user.email
-      redirect '/'
     else
       binding.pry
     end
-    redirect '/'
+    if !session[:box][:email].nil? && !session[:salesforce][:email].nil?
+      user = DB::User.first(email: session[:box][:email])
+      params =  {
+                  salesforce_auth_token: user.salesforce_auth_token,
+                  salesforce_refresh_token: user.salesforce_refresh_token,
+                  box_auth_token: user.box_auth_token,
+                  box_refresh_token: user.box_refresh_token
+                }
+      uri = Addressable::URI.new
+      uri.query_values= params
+      redirect 'http://10.10.0.204:4545/authorize?' + uri.query
+    end
   end
 
   get '/error' do
