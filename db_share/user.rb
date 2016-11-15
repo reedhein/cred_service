@@ -9,11 +9,10 @@ module DB
     property :salesforce_sandbox_auth_token, String, length: 255
     property :salesforce_sandbox_refresh_token, String, length: 255
     property :box_access_token, String, length: 255
+    property :box_refresh_token, String, length: 255
     property :box_identifier, String, length: 255
     property :box_refresh_token, String, length: 255
     property :box_id, String
-    property :box_auth_token, String, length: 255
-    property :box_refresh_token, String, length: 255
 
     def sfsb_auth
       salesforce_sandbox_auth_token
@@ -21,6 +20,14 @@ module DB
 
     def sfsb_refersh
       salesforce_sandbox_refresh_token
+    end
+
+    def box_auth_token
+      box_access_token
+    end
+
+    def box_auth_token=(string)
+      self.box_access_token=(string)
     end
 
     def self.Doug

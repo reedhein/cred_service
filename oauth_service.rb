@@ -101,10 +101,10 @@ class SalesForceApp < Sinatra::Base
     if session[:box] && !session[:box][:email].nil? && session[:salesforce] && !session[:salesforce][:email].nil?
       user = DB::User.first(email: session[:box][:email])
       params =  {
-                  salesforce_auth_token: user.salesforce_auth_token,
+                  salesforce_auth_token:    user.salesforce_auth_token,
                   salesforce_refresh_token: user.salesforce_refresh_token,
-                  box_auth_token: user.box_auth_token,
-                  box_refresh_token: user.box_refresh_token
+                  box_access_token:         user.box_access_token,
+                  box_refresh_token:        user.box_refresh_token
                 }
       uri = Addressable::URI.new
       uri.query_values= params
@@ -162,8 +162,8 @@ class SalesForceApp < Sinatra::Base
   end
 
   def create_client(creds, user: DB::User.first)
-    user.box_access_token   = creds.fetch('access_token')
-    user.box_refresh_token  = creds.fetch('refresh_token')
+    user.box_access_token    = creds.fetch('access_token')
+    user.box_refresh_token = creds.fetch('refresh_token')
     puts "User update"
     client = Boxr::Client.new(user.box_access_token,
               refresh_token: creds.fetch('refresh_token'),
@@ -176,8 +176,8 @@ class SalesForceApp < Sinatra::Base
   def populate_box_creds_to_db(client)
     email = client.current_user.login
     user  = DB::User.first_or_create(email: email)
-    user.box_access_token   = client.access_token
-    user.box_refresh_token  = client.refresh_token
+    user.box_access_token    = client.access_token
+    user.box_refresh_token = client.refresh_token
     session[:box] = {}
     session[:box][:email] = email
     user.save
