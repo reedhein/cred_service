@@ -134,8 +134,8 @@ class SalesForceApp < Sinatra::Base
     user = DB::User.first_or_create(email: env.dig('omniauth.auth', 'extra', 'email'))
     binding.pry unless user
     if callback == 'salesforce'
-      user.salesforce_auth_token     = env['omniauth.auth']['credentials']['token']
-      user.salesforce_refresh_token  = env['omniauth.auth']['credentials']['refresh_token']
+      user.salesforce_auth_token     = env.dig('omniauth.auth','credentials','token')
+      user.salesforce_refresh_token  = env.dig('omniauth.auth','credentials','refresh_token')
       session[:salesforce] = {}
       session[:salesforce][:email] = user.email
     elsif callback == 'salesforcesandbox'
