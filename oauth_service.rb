@@ -69,7 +69,25 @@ class SalesForceApp < Sinatra::Base
   end
 
   get '/' do
-    haml :index
+    if session[:box] && !session[:box][:email].nil? && session[:salesforce] && !session[:salesforce][:email].nil?
+      user = DB::User.first(email: session[:box][:email])
+      params =  {
+                  salesforce_auth_token:    user.salesforce_auth_token,
+                  salesforce_refresh_token: user.salesforce_refresh_token,
+                  box_access_token:         user.box_access_token,
+                  box_refresh_token:        user.box_refresh_token,
+                  email:                    user.email
+                }
+      uri = Addressable::URI.new
+      uri.query_values= params
+      @my_params  = uri.query
+      @user_email = user.email
+      # redirect 'http://10.10.0.162:4545/authorize?' + uri.query
+      # redirect 'https://52506ad4.ngrok.io/authorize?' + uri.query
+      redirect 'http://192.168.2.165:4545/authorize?'   + uri.query
+    else
+      haml :index
+    end
   end
 
   get '/unauthenticate' do
@@ -90,7 +108,7 @@ class SalesForceApp < Sinatra::Base
       save_salesforce_credentials('salesforcesandbox')
     when 'box'
       # creds = Boxr::get_tokens(params['code'])
-      creds = Boxr::get_tokens(code=params[:code], client_id: CredService.creds.box.utility_app.client_id, client_secret: CredService.creds.box.utility_app.client_secret)
+      creds = Boxr::get_tokens(params[:code], client_id: CredService.creds.box.utility_app.client_id, client_secret: CredService.creds.box.utility_app.client_secret)
       client = create_box_client_from_creds(creds)
       user = populate_box_creds_to_db(client)
       session[:box] = {}
@@ -132,7 +150,6 @@ class SalesForceApp < Sinatra::Base
 
   def save_salesforce_credentials(callback)
     user = DB::User.first_or_create(email: env.dig('omniauth.auth', 'extra', 'email'))
-    binding.pry unless user
     if callback == 'salesforce'
       user.salesforce_auth_token     = env.dig('omniauth.auth','credentials','token')
       user.salesforce_refresh_token  = env.dig('omniauth.auth','credentials','refresh_token')
