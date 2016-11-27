@@ -69,6 +69,9 @@ class SalesForceApp < Sinatra::Base
   end
 
   get '/' do
+    session[:return_address] ||= params[:return_address]
+    session[:return_port]    ||= params[:return_port]
+    # binding.pry unless session[:return_address] && session[:return_port]
     if session[:box] && !session[:box][:email].nil? && session[:salesforce] && !session[:salesforce][:email].nil?
       user = DB::User.first(email: session[:box][:email])
       params =  {
@@ -82,9 +85,17 @@ class SalesForceApp < Sinatra::Base
       uri.query_values= params
       @my_params  = uri.query
       @user_email = user.email
+      @user = user
       # redirect 'http://10.10.0.162:4545/authorize?' + uri.query
       # redirect 'https://52506ad4.ngrok.io/authorize?' + uri.query
-      redirect 'http://192.168.2.165:4545/authorize?'   + uri.query
+      # binding.pry
+      if session[:return_address] && session[:return_port] && session[:return_port] != '80'
+        redirect "http://#{session[:return_address]}:#{session[:return_port]}/authorize?"   + uri.query
+      elsif session[:return_address] && (session[:return_port].nil? || (session[:return_port] && session[:return_port] == '80'))
+        redirect "http://#{session[:return_address]}/authorize?"   + uri.query
+      else
+        redirect '/'
+      end
     else
       haml :index
     end
@@ -101,6 +112,8 @@ class SalesForceApp < Sinatra::Base
   end
 
   get '/auth/:provider/callback' do
+    session[:return_address] ||= params[:return_address]
+    session[:return_port]    ||= params[:return_port]
     case params[:provider] 
     when 'salesforce'
       save_salesforce_credentials('salesforce')
@@ -128,8 +141,13 @@ class SalesForceApp < Sinatra::Base
       uri.query_values= params
       @my_params = uri.query
       puts uri.query
-      binding.pry
-      redirect 'http://10.10.0.162:4545/authorize?' + uri.query
+      if session[:return_address] && session[:return_port] && session[:return_port] != '80'
+        redirect "http://#{session[:return_address]}:#{session[:return_port]}/authorize?"   + uri.query
+      elsif session[:return_address] && (session[:return_port].nil? || (session[:return_port] && session[:return_port] == '80'))
+        redirect "http://#{session[:return_address]}/authorize?"   + uri.query
+      else
+        redirect '/'
+      end
     else
       redirect '/'
     end
