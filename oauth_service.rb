@@ -88,11 +88,10 @@ class SalesForceApp < Sinatra::Base
       @user = user
       # redirect 'http://10.10.0.162:4545/authorize?' + uri.query
       # redirect 'https://52506ad4.ngrok.io/authorize?' + uri.query
-      # binding.pry
       if session[:return_address] && session[:return_port] && session[:return_port] != '80'
-        redirect "http://#{session[:return_address]}:#{session[:return_port]}/authorize?"   + uri.query
+        redirect "http://#{session[:return_address].split(':').first}:#{session[:return_port]}/authorize?"   + uri.query
       elsif session[:return_address] && (session[:return_port].nil? || (session[:return_port] && session[:return_port] == '80'))
-        redirect "http://#{session[:return_address]}/authorize?"   + uri.query
+        redirect "http://#{session[:return_address].split(':').first}/authorize?"   + uri.query
       else
         redirect '/'
       end
@@ -135,16 +134,17 @@ class SalesForceApp < Sinatra::Base
                   salesforce_auth_token:    user.salesforce_auth_token,
                   salesforce_refresh_token: user.salesforce_refresh_token,
                   box_access_token:         user.box_access_token,
-                  box_refresh_token:        user.box_refresh_token
+                  box_refresh_token:        user.box_refresh_token,
+                  email:                    user.email
                 }
       uri = Addressable::URI.new
       uri.query_values= params
       @my_params = uri.query
       puts uri.query
       if session[:return_address] && session[:return_port] && session[:return_port] != '80'
-        redirect "http://#{session[:return_address]}:#{session[:return_port]}/authorize?"   + uri.query
+        redirect "http://#{session[:return_address].split(':').first}:#{session[:return_port]}/authorize?"   + uri.query
       elsif session[:return_address] && (session[:return_port].nil? || (session[:return_port] && session[:return_port] == '80'))
-        redirect "http://#{session[:return_address]}/authorize?"   + uri.query
+        redirect "http://#{session[:return_address].split(':').first}/authorize?"   + uri.query
       else
         redirect '/'
       end
@@ -219,13 +219,6 @@ class SalesForceApp < Sinatra::Base
     user
   end
 
-  last_time_say_was_run = File.read('last_run.txt').strip
-  unless Date.today.to_s == last_time_say_was_run
-    `say sushi is coming online` if RbConfig::CONFIG['host_os'] =~ /darwin/
-    File.open('last_run.txt', 'w') do |f|
-      f << Date.today.to_s
-    end
-  end
   run! if app_file == $0
 end
 

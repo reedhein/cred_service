@@ -12,7 +12,7 @@ RUN apt-get install -y build-essential git bcrypt libtool openssl automake curl 
 
 ENV CONFIGURE_OPTS --disable-install-rdoc
 
-ENV RUBY_VERSION=2.3.1
+ENV RUBY_VERSION=2.3.3
 RUN curl -O http://ftp.ruby-lang.org/pub/ruby/2.3/ruby-${RUBY_VERSION}.tar.gz && \
     tar -zxvf ruby-${RUBY_VERSION}.tar.gz && \
     cd ruby-${RUBY_VERSION} && \
